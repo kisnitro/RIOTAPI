@@ -1,30 +1,45 @@
 import requests
-import keyboard
 import time
-api_key = "RGAPI-85866b95-a0ee-4d1c-8073-e04baebc613b"
+import os
+
+ff = open("apikey.txt", 'r+') 
+line = ff.readline()
+api_key = str(line)
 
 def matchlist():
     base_link = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{name}?api_key={api_key}"
     match_list = "https://eun1.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}?api_key={api_key}"
+
+    file1 = open("BARD.txt", "a")
+    file1.close()
+    os.remove("BARD.txt")
     gomb = int(input("Please choose from the following options \n [1]: Summoner name: SdnamrA \n [2]: Custom summoner name\n"))
     if (gomb == 1):
         name = "SdnamrA"
-        print("Option [Q] selected")
+        print("Option [1] selected")
     elif (gomb == 2):
-        print("Option [W] selected")
+        print("Option [2] selected")
         name = input("Please enter your summoner name: ")
 
-        """try:
-            if keyboard.is_pressed('q'):
-                name = "SdnamrA"
-                print("Option [Q] selected")
-                break
-            elif keyboard.is_pressed('w'):
-                print("Option [W] selected")
-                name = input("Please enter your summoner name: ")
-                break
-        except:
-            break     """      
+    gomb2 = int(input("Please choose from the following options \n [1]: Normal Draft \n [2]: SoloQ\n [3]: Flex\n"))
+    if (gomb2 == 1):
+        queueID = 400
+        print("Option [1] selected")
+    elif (gomb2 == 2):
+        queueID = 420
+        print("Option [2] selected")
+    elif (gomb2 == 3):
+        queueID = 440
+        print("Option [3] selected")
+
+    gomb3 = int(input("Please choose from the following options \n [1]: Custom champion ID\n [2]: Bard\n"))
+    if (gomb3 == 1):
+        print("Option [1] selected")
+        champID = int(input("Please enter champion ID: "))
+    elif (gomb3 == 2):
+        champID = 432
+        print("Option [2] selected")
+      
 
     #   GET accountId
     full_link = base_link.format(name=name,api_key=api_key)
@@ -39,8 +54,8 @@ def matchlist():
     r = request.json()
     #   show BARD matches only
     for x in r['matches']:
-        if (int(x['queue']) == 400):
-            if(int(x['champion']) == 432):
+        if (int(x['queue']) == queueID):
+            if(int(x['champion']) == champID):
                 gameId = x['gameId']
                 gameId_text = str(gameId) + "\n"
                 text_file = open("BARD.txt", "a")
@@ -49,7 +64,10 @@ def matchlist():
 
 def matchdetails():
     baseLink = "https://eun1.api.riotgames.com/lol/match/v4/matches/{matchId}?api_key={api_key}"
-    d = ";"
+    file5 = open("stats.csv", "a")
+    file5.close()
+    os.remove("stats.csv")
+    d = ","
     temp = open("BARD.txt",'r').read().split('\n')
     #Last 7 match
     first = int(input("How many matches you want to be analyzed?(last match is first) \nFrom: "))
@@ -85,8 +103,8 @@ def matchdetails():
             kda = str(int(kills)+int(assists))
         else:
             kda = str((int(kills)+int(assists))/int(deaths))
-        output = "Match number #:" + str(x) + "; Stats: ;" + kills + d + deaths + d + assists + d + kda + d + visionScore + d + wardsPlaced + d + controlwards + d + wardsKilled + d + win + "\n"
-        f = open("stats.txt", "a")
+        output = "Match number #:" + str(x) + d + "Stats:" + d + kills + d + deaths + d + assists + d + kda + d + visionScore + d + wardsPlaced + d + controlwards + d + wardsKilled + d + win + "\n"
+        f = open("stats.csv", "a")
         f.write(output)
         f.close()
     print("Success")
